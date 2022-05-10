@@ -1,0 +1,3 @@
+# github.com/anayks/go-rstar-tree v1.2.10 => C:\Users\Kirill\Desktop\rage-server\go-rstar-tree
+## explicit; go 1.17
+github.com/anayks/go-rstar-tree

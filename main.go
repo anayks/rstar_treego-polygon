@@ -30,7 +30,7 @@ type PlayerTree struct {
 
 var PTree = &PlayerTree{
 	Sem:  SemNew(time.Second * 3),
-	Tree: rtree.NewTree(3, 2, 16),
+	Tree: rtree.NewTree(2, 2, 16),
 }
 
 const (

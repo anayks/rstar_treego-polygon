@@ -12,7 +12,6 @@ type Player struct {
 	Sem          *Semacquire
 	PosX         int `json:"x"`
 	PosY         int `json:"y"`
-	PosZ         int `json:"z"`
 	Id           int `json:"id"`
 	Point        *rtree.Point
 	playersClose []*Player
@@ -30,7 +29,7 @@ func updatePlayers(pTree *PlayerTree) {
 		pTree.Sem.Acquire()
 		// pTree.Tree.Delete(pl1)
 
-		newPoint := rtree.Point{float64(pl1.PosX + VisibilityRange/2), float64(pl1.PosY + VisibilityRange/2), float64(pl1.PosZ + VisibilityRange/2)}
+		newPoint := rtree.Point{float64(pl1.PosX + VisibilityRange/2), float64(pl1.PosY + VisibilityRange/2)}
 		pl1.Point = &newPoint
 		// pTree.Tree.Insert(pl1)
 		pTree.Sem.Release()
@@ -48,7 +47,7 @@ func updatePlayers(pTree *PlayerTree) {
 		startSearch := time.Now()
 		v1.playersClose = make([]*Player, 0)
 
-		bb, _ := rtree.NewRect(rtree.Point{float64(v1.PosX) - VisibilityRange/2, float64(v1.PosY) - VisibilityRange/2, float64(v1.PosZ) - VisibilityRange/2}, []float64{VisibilityRange, VisibilityRange, VisibilityRange})
+		bb, _ := rtree.NewRect(rtree.Point{float64(v1.PosX) - VisibilityRange/2, float64(v1.PosY) - VisibilityRange/2}, []float64{VisibilityRange, VisibilityRange})
 		pTree.Sem.Acquire()
 		// fmt.Printf("Поиск начат")
 		results := pTree.Tree.SearchIntersect(bb)

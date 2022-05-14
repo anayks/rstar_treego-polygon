@@ -35,10 +35,9 @@ var PTree = &PlayerTree{
 
 const (
 	PlayersCount    = 1000
-	MaxDown         = 2000
-	MaxRight        = 2000
-	MaxDepth        = 2000
-	VisibilityRange = 200
+	MaxDown         = 8000
+	MaxRight        = 8000
+	VisibilityRange = 500
 )
 
 const playerID = PlayersCount
@@ -46,23 +45,20 @@ const playerID = PlayersCount
 type Pos struct {
 	X int `json:"x"`
 	Y int `json:"y"`
-	Z int `json:"z"`
 }
 
 func main() {
 	for iter := 0; iter < PlayersCount; iter++ {
 		posX := rand.Intn(MaxRight)
 		posY := rand.Intn(MaxDown)
-		posZ := rand.Intn(MaxDepth)
 
-		point := rtree.Point{float64(posX), float64(posY), float64(posZ)}
+		point := rtree.Point{float64(posX), float64(posY)}
 
 		sem := SemNew(time.Second * 3)
 
 		player := &Player{
 			PosX:  posX,
 			PosY:  posY,
-			PosZ:  posZ,
 			Id:    iter,
 			Point: &point,
 			Sem:   sem,
@@ -98,7 +94,7 @@ func main() {
 
 		defer r.Body.Close()
 
-		player := updateMainPlayerPosition(t.X, t.Y, t.Z)
+		player := updateMainPlayerPosition(t.X, t.Y)
 
 		closePlayers := player.getNearestPlayersPos()
 
@@ -113,18 +109,17 @@ func main() {
 	http.ListenAndServe("localhost:8050", nil)
 }
 
-func updateMainPlayerPosition(x, y, z int) *Player {
+func updateMainPlayerPosition(x, y int) *Player {
 	AllPlayers.Sem.Acquire()
 	defer AllPlayers.Sem.Release()
 
 	if len(AllPlayers.PlayersArray) == PlayersCount {
-		point := rtree.Point{float64(x), float64(y), float64(z)}
+		point := rtree.Point{float64(x), float64(y)}
 		sem := SemNew(time.Second * 3)
 
 		newPlayer := &Player{
 			PosX:  x,
 			PosY:  y,
-			PosZ:  z,
 			Id:    PlayersCount,
 			Point: &point,
 			Sem:   sem,

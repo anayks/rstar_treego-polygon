@@ -17,56 +17,18 @@ type Player struct {
 	playersClose []*Player
 }
 
-func updatePlayers(pTree *PlayerTree) {
+func updatePlayers(pTree PlayerTree) {
 	start := time.Now()
 	defer func() {
 		fmt.Printf("function complete in %v\n", time.Since(start))
 	}()
 
-	AllPlayers.Sem.Acquire()
-
-	for _, pl1 := range AllPlayers.PlayersArray {
-		pTree.Sem.Acquire()
-		// pTree.Tree.Delete(pl1)
-
-		newPoint := rtree.Point{float64(pl1.PosX + VisibilityRange/2), float64(pl1.PosY + VisibilityRange/2)}
-		pl1.Point = &newPoint
-		// pTree.Tree.Insert(pl1)
-		pTree.Sem.Release()
-	}
-
-	AllPlayers.Sem.Release()
-
-	var summAppend time.Duration
-	var summSearch time.Duration
-
-	AllPlayers.Sem.Acquire()
-
-	for _, v1 := range AllPlayers.PlayersArray {
-		v1.Sem.Acquire()
-		startSearch := time.Now()
-		v1.playersClose = make([]*Player, 0)
-
+	for i := 0; i < 1000; i++ {
+		v1 := AllPlayers.PlayersArray[i]
 		bb, _ := rtree.NewRect(rtree.Point{float64(v1.PosX) - VisibilityRange/2, float64(v1.PosY) - VisibilityRange/2}, []float64{VisibilityRange, VisibilityRange})
-		pTree.Sem.Acquire()
-		// fmt.Printf("Поиск начат")
-		results := pTree.Tree.SearchIntersect(bb)
-		pTree.Sem.Release()
-
-		summSearch += time.Since(startSearch)
-		startAppend := time.Now()
-
-		for _, v2 := range results {
-			if v1 == v2 {
-				continue
-			}
-			v1.playersClose = append(v1.playersClose, v2.(*Player))
-		}
-		v1.Sem.Release()
-		summAppend += time.Since(startAppend)
+		pTree.Tree.SearchIntersect(*bb)
 	}
 
-	AllPlayers.Sem.Release()
 }
 
 func (pl *Player) moveRandom() {

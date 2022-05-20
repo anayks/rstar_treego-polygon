@@ -26,10 +26,6 @@ func (s *Semacquire) Acquire() error {
 		{
 			return nil
 		}
-	case <-time.After(s.timeout):
-		{
-			return ErrNoTickets
-		}
 	}
 }
 
@@ -38,10 +34,6 @@ func (s *Semacquire) Release() error {
 	case <-s.sem:
 		{
 			return nil
-		}
-	case <-time.After(s.timeout):
-		{
-			return ErrIllegalUnlock
 		}
 	}
 }
